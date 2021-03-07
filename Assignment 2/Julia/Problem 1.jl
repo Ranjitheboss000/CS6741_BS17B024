@@ -30,7 +30,7 @@ for i = 1:n
     end
 end
 
-
+println("\n")
 pretty_table(tidyData)
 
 
