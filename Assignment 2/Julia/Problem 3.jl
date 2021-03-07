@@ -46,4 +46,5 @@ rank = select(moltenData,:date,:rank);
 insertcols!(rank,1,:id => id,makeunique=true);
 rank[!,:id] = convert.(Int,rank[!,:id]);
 
+println("\n")
 show(rank,show_row_number = false)
