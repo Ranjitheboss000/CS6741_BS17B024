@@ -7,19 +7,22 @@ covid = vcat(DataFrame.(j)...);
 
 show(covid,allcols=true,show_row_number = false)
 
-mon(x) = x[4:end]
+calendar = Dict("01" => "January", "02" => "February", "03" => "March","04" => "April", "05" => "May", "06"=> "June",
+                "07" => "July", "08"=> "August", "09"=> "September","10"=> "October","11" => "November", "12" => "December");
 
-transform!(covid,:date => ByRow(mon) => :month);
+monY(x) = calendar[x[6:7]]*" "*x[1:4]
+
+transform!(covid,:dateymd => ByRow(monY) => :monthYear);
 
 cols = ["dailyconfirmed","dailydeceased","dailyrecovered"];
 for c in cols
     covid[!,c] = parse.(Int,covid[!,c])
 end
 
-gTab = groupby(covid, :month);
+gTab = groupby(covid, :monthYear);
 
 println("\n")
-pretty_table(combine(gTab,cols .=> sum .=> cols))
+pretty_table(combine(gTab,cols .=> sum .=> ["monthly_"*g[6:end] for g in cols ]))
 
 #First six values are assigned zero in the dataframe during moving average computation
 rows = nrow(covid);
@@ -31,20 +34,20 @@ for c in cols
     end
 end
 
-#plot(1:rows,covid[:,:dailyconfirmed],label = "Non-smoothened \ndailyconfirmed")
+# plot(1:rows,covid[:,:dailyconfirmed],label = "Non-smoothened \ndailyconfirmed",xlabel = "Days",ylabel = "Counts")
 
-#plot(1:rows,covid[:,:mov_avg_dc],label = "Smoothened \ndailyconfirmed",linecolor = "red")
+# plot(1:rows,covid[:,:mov_avg_dc],label = "Smoothened \ndailyconfirmed",linecolor = "red",xlabel = "Days",ylabel = "Counts")
 
-#plot(1:rows,covid[:,:dailydeceased],label = "Non-smoothened \ndailydeceased")
+# plot(1:rows,covid[:,:dailydeceased],label = "Non-smoothened \ndailydeceased",xlabel = "Days",ylabel = "Counts")
 
-#plot(1:rows,covid[:,:mov_avg_dd],label = "Smoothened \ndailydeceased",linecolor = "red")
+# plot(1:rows,covid[:,:mov_avg_dd],label = "Smoothened \ndailydeceased",linecolor = "red",xlabel = "Days",ylabel = "Counts")
 
-#plot(1:rows,covid[:,:dailyrecovered],label = "non-smoothened \ndailyrecovered")
+# plot(1:rows,covid[:,:dailyrecovered],label = "non-smoothened \ndailyrecovered",xlabel = "Days",ylabel = "Counts")
 
-#plot(1:rows,covid[:,:mov_avg_dr],label = "Smoothened \ndailyrecovered",linecolor = "red")
+# plot(1:rows,covid[:,:mov_avg_dr],label = "Smoothened \ndailyrecovered",linecolor = "red",xlabel = "Days",ylabel = "Counts")
 
-#plot(1:rows,hcat(covid[:,:dailyconfirmed],covid[:,:mov_avg_dc]),label = ["dailyconfirmed" "Smoothened dc"])
+# plot(1:rows,hcat(covid[:,:dailyconfirmed],covid[:,:mov_avg_dc]),label = ["dailyconfirmed" "Smoothened dc"],xlabel = "Days",ylabel = "Counts")
 
-#plot(1:rows,hcat(covid[:,:dailydeceased],covid[:,:mov_avg_dd]),label = ["dailydeceased" "Smoothened dd"])
+# plot(1:rows,hcat(covid[:,:dailydeceased],covid[:,:mov_avg_dd]),label = ["dailydeceased" "Smoothened dd"],xlabel = "Days",ylabel = "Counts")
 
-#plot(1:rows,hcat(covid[:,:dailyrecovered],covid[:,:mov_avg_dr]),label = ["dailyrecovered" "Smoothened dr"])
+# plot(1:rows,hcat(covid[:,:dailyrecovered],covid[:,:mov_avg_dr]),label = ["dailyrecovered" "Smoothened dr"],xlabel = "Days",ylabel = "Counts")
