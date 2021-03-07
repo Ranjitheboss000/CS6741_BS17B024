@@ -53,6 +53,5 @@ for r = 1:2:9
         end
     end
 end
-
-
+println("\n")
 pretty_table(tidyData)
