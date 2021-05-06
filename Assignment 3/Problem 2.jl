@@ -9,15 +9,21 @@ function convolve_uniform(x,a,b,n)
     end
 end         
 
+# function normal_approx(a,b,n)
+#     w(x,sigma) = pdf(Normal(n/2,sigma),x)
+#     convf(x) = convolve_uniform(x,a,b,n)
+#     sig = 0:0.001:2
+#     range = 0:0.01:n
+#     X = convf.(range)
+#     Y(sigma) = w.(range,sigma)
+#     err = [sum((Y(i).-X).^2) for i = sig]
+#     return Normal(n/2,sig[findall(x->x==minimum(err), err)][1])
+# end
+# The above method is a naive method
+
 function normal_approx(a,b,n)
-    w(x,sigma) = pdf(Normal(n/2,sigma),x)
-    convf(x) = convolve_uniform(x,a,b,n)
-    sig = 0:0.001:2
-    range = 0:0.01:n
-    X = convf.(range)
-    Y(sigma) = w.(range,sigma)
-    err = [sum((Y(i).-X).^2) for i = sig]
-    return Normal(n/2,sig[findall(x->x==minimum(err), err)][1])
+    # By CLT
+    return Normal(n/2,sqrt(n)*std(Uniform()))
 end
 
 f(x,n) = convolve_uniform(x,0,1,n)*log(convolve_uniform(x,0,1,n)/pdf(normal_approx(0,1,n),x))
